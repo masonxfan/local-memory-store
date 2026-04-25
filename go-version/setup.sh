@@ -71,6 +71,7 @@ cd "$SCRIPT_DIR"
 export CGO_ENABLED=1
 export CGO_CFLAGS="-I$ORT_DIR/include"
 export CGO_LDFLAGS="-L$ORT_DIR/lib"
+go mod tidy
 go build -o memory-store .
 echo "  ✓ 编译完成: memory-store"
 

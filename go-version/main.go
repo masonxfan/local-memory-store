@@ -309,7 +309,7 @@ func (vs *VectorStore) Add(id, user, text string, embedding []float32, metadata 
 	return err
 }
 
-func (vs *VectorStore) Search(user, queryEmbeddingBytes []byte, queryEmbedding []float32, limit int) ([]Memory, error) {
+func (vs *VectorStore) Search(user string, queryEmbedding []float32, limit int) ([]Memory, error) {
 	var rows *sql.Rows
 	var err error
 
@@ -527,7 +527,7 @@ func main() {
 		}
 		defer store.Close()
 
-		results, err := store.Search(*user, float32ToBytes(embedding), embedding, *limit)
+		results, err := store.Search(*user, embedding, *limit)
 		if err != nil {
 			fmt.Printf(`{"error": "search: %s"}`+"\n", err)
 			os.Exit(1)

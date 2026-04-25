@@ -68,6 +68,7 @@ Push-Location $SCRIPT_DIR
 $env:CGO_ENABLED = "1"
 $env:CGO_CFLAGS = "-I$ORT_DIR\include"
 $env:CGO_LDFLAGS = "-L$ORT_DIR\lib"
+go mod tidy
 go build -o memory-store.exe .
 Pop-Location
 Write-Host "  ✓ 编译完成: memory-store.exe" -ForegroundColor Green
