@@ -84,12 +84,81 @@
 | 用户偏好 | "好的""懂了" |
 | 任务完成记录 | 中间试错过程 |
 
-## 安装
+## 安装与设置
+
+### 环境要求
+
+- Python 3.10+
+- 磁盘空间：~200MB（ChromaDB + ONNX 模型）
+- 内存：~200MB（模型加载时）
+- 无需 GPU，CPU 即可
+
+### 1. 安装依赖
 
 ```bash
 pip install chromadb
-# ChromaDB 自带 ONNX embedding，不需要额外安装模型
-# 首次运行会自动下载 all-MiniLM-L6-v2 模型 (~79MB)
+# ChromaDB 自带 ONNX Runtime 和 embedding 函数，不需要额外安装
+```
+
+### 2. 克隆项目
+
+```bash
+git clone https://github.com/masonxfan/local-memory-store.git
+cd local-memory-store
+```
+
+### 3. 首次运行（自动初始化）
+
+```bash
+# 第一次运行任意命令时，会自动：
+# 1. 下载 all-MiniLM-L6-v2 ONNX 模型 (~79MB) 到 ~/.cache/chroma/onnx_models/
+# 2. 在当前目录创建 chroma_db/ 持久化目录
+python memory_service.py stats
+```
+
+### 4. 验证安装
+
+```bash
+# 存一条测试记忆
+python memory_service.py add --user test --text "这是一条测试记忆"
+
+# 搜索
+python memory_service.py search --user test --query "测试"
+
+# 应该返回刚才存的那条，score > 0.5
+```
+
+### 目录结构
+
+```
+local-memory-store/
+├── memory_service.py    ← 主程序
+├── chroma_db/           ← 向量数据（自动创建，已 gitignore）
+│   ├── chroma.sqlite3   ← 元数据 + 原文
+│   └── *.bin            ← HNSW 向量索引
+└── README.md
+```
+
+### ChromaDB 数据存储说明
+
+ChromaDB 使用 `PersistentClient` 模式，数据存在本地 `chroma_db/` 目录：
+
+- **chroma.sqlite3**：SQLite 数据库，存储原始文本、metadata、ID 映射
+- **HNSW 索引文件**：二进制文件，存储向量索引结构
+- 所有数据持久化在磁盘，重启不丢失
+- 备份：直接复制整个 `chroma_db/` 目录即可
+- 迁移：把 `chroma_db/` 复制到另一台机器，装好 ChromaDB 就能用
+
+### 可选：ChromaDB Server 模式（多客户端访问）
+
+如果需要多个 Agent/程序同时访问同一个向量库：
+
+```bash
+# 启动 ChromaDB 服务（默认端口 8000）
+chroma run --host 0.0.0.0 --port 8000 --path ./chroma_db
+
+# 客户端连接时改用 HttpClient：
+# client = chromadb.HttpClient(host="localhost", port=8000)
 ```
 
 ## 使用
