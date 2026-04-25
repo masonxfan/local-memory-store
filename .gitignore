@@ -3,3 +3,8 @@ __pycache__/
 *.pyc
 .env
 .venv/
+go-version/onnxruntime/
+go-version/models/
+go-version/memory-store
+go-version/memory-store.exe
+go-version/memories.db
