@@ -93,39 +93,35 @@
 - 内存：~200MB（模型加载时）
 - 无需 GPU，CPU 即可
 
-### 1. 安装依赖
-
-```bash
-pip install chromadb
-# ChromaDB 自带 ONNX Runtime 和 embedding 函数，不需要额外安装
-```
-
-### 2. 克隆项目
+### 一键安装
 
 ```bash
 git clone https://github.com/masonxfan/local-memory-store.git
 cd local-memory-store
 ```
 
-### 3. 首次运行（自动初始化）
-
-```bash
-# 第一次运行任意命令时，会自动：
-# 1. 下载 all-MiniLM-L6-v2 ONNX 模型 (~79MB) 到 ~/.cache/chroma/onnx_models/
-# 2. 在当前目录创建 chroma_db/ 持久化目录
-python memory_service.py stats
+**Windows (PowerShell):**
+```powershell
+powershell -ExecutionPolicy Bypass -File setup.ps1
 ```
 
-### 4. 验证安装
+**Linux / macOS:**
+```bash
+chmod +x setup.sh && ./setup.sh
+```
+
+脚本会自动：检查 Python → 创建虚拟环境 → 安装 ChromaDB → 下载 ONNX 模型 → 运行验证测试
+
+### 手动安装
+
+如果你不想用一键脚本：
 
 ```bash
-# 存一条测试记忆
-python memory_service.py add --user test --text "这是一条测试记忆"
-
-# 搜索
-python memory_service.py search --user test --query "测试"
-
-# 应该返回刚才存的那条，score > 0.5
+python -m venv .venv
+# Windows: .\.venv\Scripts\Activate.ps1
+# Linux/Mac: source .venv/bin/activate
+pip install chromadb
+python memory_service.py stats  # 首次运行会下载模型 (~79MB)
 ```
 
 ### 目录结构
